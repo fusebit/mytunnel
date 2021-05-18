@@ -1,5 +1,5 @@
 {
-  "name": "fusetunnel",
+  "name": "@fusebit/tunnel",
   "description": "Expose localhost to the world",
   "version": "3.2.1",
   "license": "MIT",
