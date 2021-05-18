@@ -7,11 +7,17 @@
     "type": "git",
     "url": "git://github.com/fusebit/tunnel.git"
   },
-  "author": "Fusebit",
-  "main": "./localtunnel.js",
-  "types": "./localtunnel.d.ts",
+  "author": "Vladlen Fedosov <vlad.fedosov@gmail.com>",
+  "contributors": [
+    "Roman Shtylman <shtylman@gmail.com>",
+    "Gert Hengeveld <gert@hichroma.com>",
+    "Tom Coleman <tom@hichroma.com>",
+    "Matthew Zhao <matthewzhaocc@gmail.com>",
+  ],
+  "main": "./fusetunnel.js",
+  "types": "./fusetunnel.d.ts",
   "bin": {
-    "lt": "bin/lt.js"
+    "ft": "bin/ft.js"
   },
   "scripts": {
     "test": "mocha --timeout 15000 --exit -- *.spec.js"
