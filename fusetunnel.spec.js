@@ -16,119 +16,116 @@ let fakePort;
 let testServer;
 
 describe('localtunnel', () => {
+  before((done) => {
+    testServer = http.createServer();
+    testServer.on('request', (req, res) => {
+      res.write(req.headers.host);
+      res.end();
+    });
+    testServer.listen(() => {
+      const { port } = testServer.address();
+      fakePort = port;
+      done();
+    });
+  });
 
-    before(done => {
-        testServer = http.createServer();
-        testServer.on('request', (req, res) => {
-            res.write(req.headers.host);
-            res.end();
+  after(() => {
+    testServer.close();
+  });
+
+  it('query localtunnel server w/ ident', async () => {
+    const tunnel = await localtunnel({ port: fakePort });
+
+    try {
+      await supertest(tunnel.url)
+        .get('/')
+        .expect(200)
+        .expect((res) => {
+          expect(tunnel.url).to.endsWith(res.text);
         });
-        testServer.listen(() => {
-            const { port } = testServer.address();
-            fakePort = port;
-            done();
-        });
-    });
+    } finally {
+      tunnel.close();
+    }
+  });
 
-    after(() => {
-        testServer.close();
-    });
+  it('request specific domain', async () => {
+    const subdomain = Math.random().toString(36).substr(2);
+    const tunnel = await localtunnel({ port: fakePort, subdomain });
+    tunnel.close();
 
-    it('query localtunnel server w/ ident', async () => {
-        const tunnel = await localtunnel({ port: fakePort });
+    expect(tunnel.url).to.startsWith(`https://${subdomain}.`);
+  });
 
-        try {
-            await supertest(tunnel.url)
-                .get('/')
-                .expect(200)
-                .expect(res => {
-                    expect(tunnel.url).to.endsWith(res.text);
-                });
-        } finally {
-            tunnel.close();
-        }
-    });
+  describe('--local-host localhost', () => {
+    it('override Host header with local-host', async () => {
+      const tunnel = await localtunnel({ port: fakePort, local_host: 'localhost' });
 
-    it('request specific domain', async () => {
-        const subdomain = Math.random()
-            .toString(36)
-            .substr(2);
-        const tunnel = await localtunnel({ port: fakePort, subdomain });
+      try {
+        await supertest(tunnel.url)
+          .get('/')
+          .expect(200)
+          .expect((res) => {
+            expect(res.text).to.equal('localhost');
+          });
+      } finally {
         tunnel.close();
+      }
+    });
+  });
 
-        expect(tunnel.url).to.startsWith(`https://${subdomain}.`);
+  describe('--local-host 127.0.0.1', () => {
+    it('override Host header with local-host', async () => {
+      const tunnel = await localtunnel({ port: fakePort, local_host: '127.0.0.1' });
+
+      try {
+        await supertest(tunnel.url)
+          .get('/')
+          .expect(200)
+          .expect((res) => {
+            expect(res.text).to.equal('127.0.0.1');
+          });
+      } finally {
+        tunnel.close();
+      }
     });
 
-    describe('--local-host localhost', () => {
-        it('override Host header with local-host', async () => {
-            const tunnel = await localtunnel({ port: fakePort, local_host: 'localhost' });
+    it('send chunked request', async () => {
+      const tunnel = await localtunnel({ port: fakePort, local_host: '127.0.0.1' });
 
+      const parsed = url.parse(tunnel.url);
+      const opt = {
+        host: parsed.host,
+        port: 443,
+        headers: {
+          host: parsed.hostname,
+          'Transfer-Encoding': 'chunked',
+        },
+        path: '/',
+      };
+
+      await new Promise((resolve, reject) => {
+        const req = https.request(opt, (res) => {
+          res.setEncoding('utf8');
+          let body = '';
+
+          res.on('data', (chunk) => {
+            body += chunk;
+          });
+
+          res.on('end', () => {
             try {
-                await supertest(tunnel.url)
-                    .get('/')
-                    .expect(200)
-                    .expect(res => {
-                        expect(res.text).to.equal('localhost');
-                    });
+              assert.strictEqual(body, '127.0.0.1');
+            } catch (e) {
+              reject(e);
             } finally {
-                tunnel.close();
+              tunnel.close();
             }
+            resolve();
+          });
         });
+
+        req.end(crypto.randomBytes(1024 * 8).toString('base64'));
+      });
     });
-
-    describe('--local-host 127.0.0.1', () => {
-        it('override Host header with local-host', async () => {
-            const tunnel = await localtunnel({ port: fakePort, local_host: '127.0.0.1' });
-
-            try {
-                await supertest(tunnel.url)
-                    .get('/')
-                    .expect(200)
-                    .expect(res => {
-                        expect(res.text).to.equal('127.0.0.1');
-                    });
-            } finally {
-                tunnel.close();
-            }
-        });
-
-        it('send chunked request', async () => {
-            const tunnel = await localtunnel({ port: fakePort, local_host: '127.0.0.1' });
-
-            const parsed = url.parse(tunnel.url);
-            const opt = {
-                host: parsed.host,
-                port: 443,
-                headers: {
-                    host: parsed.hostname,
-                    'Transfer-Encoding': 'chunked',
-                },
-                path: '/',
-            };
-
-            await new Promise((resolve, reject) => {
-                const req = https.request(opt, res => {
-                    res.setEncoding('utf8');
-                    let body = '';
-
-                    res.on('data', chunk => {
-                        body += chunk;
-                    });
-
-                    res.on('end', () => {
-                        try {
-                            assert.strictEqual(body, '127.0.0.1');
-                        } catch (e) {
-                            reject(e);
-                        } finally {
-                            tunnel.close();
-                        }
-                        resolve();
-                    });
-                });
-
-                req.end(crypto.randomBytes(1024 * 8).toString('base64'));
-            });
-        });
-    });
+  });
 });

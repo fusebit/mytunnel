@@ -50,7 +50,7 @@ const { argv } = yargs
     describe: 'Print basic request info',
   })
   .option('insecure', {
-    describe: 'enable insecure TLS connections for remote connection'
+    describe: 'enable insecure TLS connections for remote connection',
   })
   .require('port')
   .boolean('local-https')
@@ -76,11 +76,11 @@ if (typeof argv.port !== 'number') {
     local_key: argv.localKey,
     local_ca: argv.localCa,
     allow_invalid_cert: argv.allowInvalidCert,
-  }).catch(err => {
+  }).catch((err) => {
     throw err;
   });
 
-  tunnel.on('error', err => {
+  tunnel.on('error', (err) => {
     throw err;
   });
 
@@ -100,11 +100,11 @@ if (typeof argv.port !== 'number') {
   }
 
   if (argv['print-requests']) {
-    tunnel.on('request', info => {
+    tunnel.on('request', (info) => {
       console.log(new Date().toString(), info.method, info.path);
     });
   }
-  if (argv["insecure"]) {
+  if (argv['insecure']) {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
   }
 })();
