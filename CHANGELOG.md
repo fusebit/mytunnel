@@ -1,3 +1,6 @@
+# 3.2.2 (2021-05-20)
+- Switch to a manual calculation for sha256 fingerprint to ensure backward compatibility.
+
 # 3.2.1 (2021-02-22)
 - Removed pings to server as they violate correct use of the tcp socket passed to httpAgent
 
