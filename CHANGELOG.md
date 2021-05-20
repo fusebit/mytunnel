@@ -1,3 +1,6 @@
+# 3.2.3 (2021-05-20)
+- Switch prettier to dev dependency.
+
 # 3.2.2 (2021-05-20)
 - Switch to a manual calculation for sha256 fingerprint to ensure backward compatibility.
 
