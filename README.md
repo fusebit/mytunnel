@@ -7,7 +7,7 @@ Great for working with browser testing tools like browserling or external api ca
 ## Quickstart
 
 ```
-npx tunnel --port 8000
+npx ft --port 8000
 ```
 
 ## Installation
