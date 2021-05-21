@@ -64,7 +64,7 @@ const fusetunnel = require('tunnel');
   const tunnel = await fusetunnel({ port: 3000 });
 
   // the assigned public url for your tunnel
-  // i.e. https://abcdefgjhij.localtunnel.me
+  // i.e. https://abcdefgjhij.tunnel.dev.fusebit.io
   tunnel.url;
 
   tunnel.on('close', () => {
@@ -77,7 +77,7 @@ const fusetunnel = require('tunnel');
 
 - `port` (number) [required] The local port number to expose through fusetunnel.
 - `subdomain` (string) Request a specific subdomain on the proxy server. **Note** You may not actually receive this name depending on availability.
-- `host` (string) URL for the upstream proxy server. Defaults to `https://localtunnel.me`.
+- `host` (string) URL for the upstream proxy server. Defaults to `https://tunnel.dev.fusebit.io`.
 - `local_host` (string) Proxy to this hostname instead of `localhost`. This will also cause the `Host` header to be re-written to this value in proxied requests.
 - `local_https` (boolean) Enable tunneling to local HTTPS server.
 - `local_cert` (string) Path to certificate PEM file for local HTTPS server.
@@ -103,19 +103,9 @@ The `tunnel` instance has the following methods
 | ------ | ---- | ---------------- |
 | close  |      | close the tunnel |
 
-## other clients
-
-Clients in other languages
-
-_go_ [gotunnelme](https://github.com/NoahShen/gotunnelme)
-
-_go_ [go-localtunnel](https://github.com/localtunnel/go-localtunnel)
-
-_C#/.NET_ [localtunnel-client](https://github.com/angelobreuer/localtunnel-client)
-
 ## server
 
-See [fusebit/tunnel-server](//github.com/fusebit/tunnel-server) for details on the server that powers fusetunnel.
+See [fusebit/tunnel-server](https://github.com/fusebit/tunnel-server) for details on the server that powers fusetunnel.
 
 ## License
 
