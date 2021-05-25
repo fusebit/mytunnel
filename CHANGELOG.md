@@ -1,3 +1,6 @@
+# 3.2.5 (2021-05-25)
+- Fusetunnel now handles close properly. 
+
 # 3.2.3 (2021-05-20)
 - Switch prettier to dev dependency.
 
