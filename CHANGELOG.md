@@ -1,3 +1,5 @@
+# 3.2.6 (2021-6-3)
+- Fusetunnel remote connection retry timeout.
 # 3.2.5 (2021-05-25)
 - Fusetunnel now handles close properly. 
 
